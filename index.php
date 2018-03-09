@@ -79,23 +79,20 @@ try {
           $sql = sprintf("INSERT INTO users (username, email, note) VALUES ('%s', '%s', '%s')", $sqlinput['username'], $sqlinput['email'], $sqlinput['note']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
-      }
+      } else {
+        var_dump(sprintf("L'utilisateur '%s' est déjà existant.", $sqlinput['email']));
+            }
 
-      if($sqlinput['id']!= null ) {
+      if($sqlinput['id'] ) {
           $sql = sprintf("UPDATE users SET note= ('%s') WHERE (id)=('%s')" ,$sqlinput['note'],$sqlinput['id']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
       }
 
-      if($sqlinput['email']!= null ) {
+      if($sqlinput['email'] ) {
           $sql = sprintf("UPDATE users SET note= ('%s') WHERE (email)=('%s')" ,$sqlinput['note'],$sqlinput['email']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
-      }
-
-
-      else {
-          var_dump(sprintf("L'utilisateur '%s' est déjà existant.", $sqlinput['email']));
       }
 
 
