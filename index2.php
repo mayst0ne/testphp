@@ -29,11 +29,8 @@ foreach ($argv as $index => $value) {
 
 }
 
-var_dump($paramsExploded);
-
+$sqlcount=var_dump(count($sqlinput));
 var_dump($sqlinput);
-
-
 
 
 
@@ -73,11 +70,12 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     if ($sqlinput) {
 
+
       $query = sprintf("SELECT count(id) as n FROM users WHERE email = '%s'", $sqlinput['email']);
       $stmt = $pdo->query($query);
       $nUsers = $stmt->fetch(PDO::FETCH_ASSOC);
 
-      if($nUsers['n'] == 0) {
+      if(($nUsers['n'] == 0)) {
           $sql = sprintf("INSERT INTO users (username, email, note) VALUES ('%s', '%s', '%s')", $sqlinput['username'], $sqlinput['email'], $sqlinput['note']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
@@ -87,13 +85,13 @@ try {
           $sql = sprintf("UPDATE users SET note= ('%s') WHERE (id)=('%s')" ,$sqlinput['note'],$sqlinput['id']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
-        }
+      }
 
       if($sqlinput['email']!= null ) {
           $sql = sprintf("UPDATE users SET note= ('%s') WHERE (email)=('%s')" ,$sqlinput['note'],$sqlinput['email']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
-        }
+      }
 
 
       else {
@@ -111,7 +109,7 @@ try {
         $avg=$stmt->fetch();
 
         var_dump(sprintf('La moyenne est de %s', $avg['average']));
-      }
+    }
 
 
     var_dump($pdo);
