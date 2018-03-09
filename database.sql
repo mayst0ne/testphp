@@ -1,0 +1,5 @@
+CREATE DATABASE php_is_best;
+
+USE php_is_best;
+
+CREATE TABLE IF NOT EXISTS `users` (id INT NOT NULL AUTO_INCREMENT,username VARCHAR(20),email VARCHAR(50),PRIMARY KEY (id), note INT);
