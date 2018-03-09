@@ -19,14 +19,19 @@ foreach ($argv as $index => $value) {
         if(in_array($paramsExploded[0], $noteOptions)) {
             $paramsExploded[0]='note';
         }
+        $avgOptions = ['a'];
+        if(in_array($paramsExploded[0], $usernameOptions)) {
+            $paramsExploded[0]='average';
+        }
 
         $sqlinput[$paramsExploded[0]] = $paramsExploded[1];
 }
 
 }
 
-var_dump($sqlinput);
+var_dump($paramsExploded);
 
+var_dump($sqlinput);
 
 
 
@@ -76,12 +81,38 @@ try {
           $sql = sprintf("INSERT INTO users (username, email, note) VALUES ('%s', '%s', '%s')", $sqlinput['username'], $sqlinput['email'], $sqlinput['note']);
           $pdo->exec($sql);
           var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
-      } else {
+      }
+
+      if($sqlinput['id']!= null ) {
+          $sql = sprintf("UPDATE users SET note= ('%s') WHERE (id)=('%s')" ,$sqlinput['note'],$sqlinput['id']);
+          $pdo->exec($sql);
+          var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+        }
+
+      if($sqlinput['email']!= null ) {
+          $sql = sprintf("UPDATE users SET note= ('%s') WHERE (email)=('%s')" ,$sqlinput['note'],$sqlinput['email']);
+          $pdo->exec($sql);
+          var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+        }
+
+
+      else {
           var_dump(sprintf("L'utilisateur '%s' est déjà existant.", $sqlinput['email']));
       }
 
 
     }
+    if($paramsExploded[0]='average') {
+        $sql = 'SELECT AVG(note) AS average FROM users';
+        $pdo->query($sql);
+        var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+        var_dump($pdo);
+        $stmt = $pdo->query($sql);
+        $avg=$stmt->fetch();
+
+        var_dump(sprintf('La moyenne est de %s', $avg['average']));
+      }
+
 
     var_dump($pdo);
 } catch (PDOException $e) {
