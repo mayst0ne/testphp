@@ -28,7 +28,7 @@ CREATE TABLE `users` (
   `email` varchar(50) DEFAULT NULL,
   `note` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,6 +37,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (3,'john','john@domain.tld',16),(4,'Michael','michael@domain.tld',8),(5,'Nancy','nancy@domain.tld',18),(6,'Bob','bob@domain.tld',12),(7,'Judy','judy@domain.tld',3),(8,'Elliot','elliot@domain.tld',14);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +50,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-09 10:27:24
+-- Dump completed on 2018-03-09 13:02:37
