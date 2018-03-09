@@ -1,67 +1,121 @@
 <?php
 
-/**
- * Vous devez :
- *
- * 1 - Créer une base de donnée (php_is_best) avec une table utilisateur (users) (dans un fichier database.sql)
- * - La table doit avoir les colonnes suivantes :
- * -- id INCREMENT INT
- * -- username VARCHAR(50)
- * -- email VARCHAR(50)
- * -- note INT
- *
- * POINTS: 2
- *
- * 2 - Les commandes suivante doivent permettre l'ajout d'un utilisateur avec une note :
- * -- php index.php --username=USERNAME --email=EMAIL --note=NOTE_INTEGER
- * -- php index.php -u=USERNAME -e=EMAIL -n=NOTE_INTEGER
- *
- * - L'ajout d'un utilisateur doit être unique
- *
- * POINTS: 3
- *
- * 3 - Les commandes suivante doivent mettre à jour une note d'un utilisateur
- * -- php index.php --email=EMAIL --note=NOTE_INTEGER
- * -- php index.php -e=EMAIL -n=NOTE_INTEGER
- * -- php index.php --id=INTEGER -n=NOTE_INTEGER
- *
- * POINTS: 3
- *
- * 4 - Les commandes suivante doivent lister les utilisateurs
- * -- php index.php --list
- * -- php index.php -l
- *
- * - Le format de la liste doit être la suivante :
- * | id | USERNAME | EMAIL                | NOTE |
- * | 1  | John     | john.doe@domaine.tld | 10   |
- * | 2  | jane     | j.doe@domaine.tld    | 20   |
- *
- * POINTS: 8
- *
- * 5 - Les commandes suivante doivent permettre d'afficher la moyenne de toutes les notes
- * - php index.php --average
- * - php index.php -a
- *
- * POINTS: 2
- *
- * 6 - Le travail doit être pousser sur un repository contenant fichier un README.md
- * avec votre nom et prénom et le lien envoyer dans votre channel Teams avant 17 h 00.
- *
- * POINTS: 2
- *
- * 7 - Le code doit être organisé (fonctions, fichiers...)
- *
- * POINTS (bonus) : 1
- *
- * - Total des points 20 (avec bonus 21)
- *
- * Conseils :
- * - /!\ Poussez votre code avant 17 h 00 (toutes modifications après cette heure ne seront pas prises en compte dans l'évaluation)
- * - /!\ Vous pouvez vous aidez, mais pas copier le code du voisin
- *
- * - Créer votre repository en premier
- * - Lister vos tâches avant de commencer à coder
- * - Voir le point 7 en dernier, c'est du bonus
- * - Demander conseil au formateur
- * - Prendre des pauses et amusez-vous xD
- */
+$sqlinput = [];
+
+foreach ($argv as $index => $value) {
+    if($index > 0) {
+        $params = str_replace('-', '', $value);
+        $paramsExploded = explode('=', $params);
+
+        $usernameOptions = ['u'];
+        if(in_array($paramsExploded[0], $usernameOptions)) {
+            $paramsExploded[0]='username';
+        }
+        $emailOptions = ['e'];
+        if(in_array($paramsExploded[0], $emailOptions)) {
+            $paramsExploded[0]='email';
+        }
+        $noteOptions = ['n'];
+        if(in_array($paramsExploded[0], $noteOptions)) {
+            $paramsExploded[0]='note';
+        }
+        $avgOptions = ['a'];
+        if(in_array($paramsExploded[0], $usernameOptions)) {
+            $paramsExploded[0]='average';
+        }
+
+        $sqlinput[$paramsExploded[0]] = $paramsExploded[1];
+}
+
+}
+
+$sqlcount=var_dump(count($sqlinput));
+var_dump($sqlinput);
+
+
+
+define('DS', DIRECTORY_SEPARATOR);
+
+function currentPath(string $fileName): string {
+     $path = array(
+         __DIR__,
+         $fileName
+     );
+     return implode(DS, $path);
+}
+$path = currentPath('config.ini');
+if(file_exists($path)) {
+     $strings = array();
+     $resource = fopen($path, 'r');
+     if($resource) {
+         while (($string = fgets($resource, 4096)) !== false) {
+             $strings[] = trim($string);
+         }
+         fclose($resource);
+     }
+     $config = array();
+     foreach ($strings as $string) {
+         $paramsExploded = explode('=', $string);
+         $config[$paramsExploded[0]] = $paramsExploded[1];
+     }
+}
+extract($config);
+
+try {
+    $pdo = new PDO(
+        "mysql:host=$host;port=$port;dbname=$database",
+        $username,
+        $passwd);
+
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    if ($sqlinput) {
+
+
+      $query = sprintf("SELECT count(id) as n FROM users WHERE email = '%s'", $sqlinput['email']);
+      $stmt = $pdo->query($query);
+      $nUsers = $stmt->fetch(PDO::FETCH_ASSOC);
+
+      if(($nUsers['n'] == 0)) {
+          $sql = sprintf("INSERT INTO users (username, email, note) VALUES ('%s', '%s', '%s')", $sqlinput['username'], $sqlinput['email'], $sqlinput['note']);
+          $pdo->exec($sql);
+          var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+      }
+
+      if($sqlinput['id']!= null ) {
+          $sql = sprintf("UPDATE users SET note= ('%s') WHERE (id)=('%s')" ,$sqlinput['note'],$sqlinput['id']);
+          $pdo->exec($sql);
+          var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+      }
+
+      if($sqlinput['email']!= null ) {
+          $sql = sprintf("UPDATE users SET note= ('%s') WHERE (email)=('%s')" ,$sqlinput['note'],$sqlinput['email']);
+          $pdo->exec($sql);
+          var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+      }
+
+
+      else {
+          var_dump(sprintf("L'utilisateur '%s' est déjà existant.", $sqlinput['email']));
+      }
+
+
+    }
+    if($paramsExploded[0]='average') {
+        $sql = 'SELECT AVG(note) AS average FROM users';
+        $pdo->query($sql);
+        var_dump(sprintf("Last insert id: %s", $pdo->lastInsertId()));
+        var_dump($pdo);
+        $stmt = $pdo->query($sql);
+        $avg=$stmt->fetch();
+
+        var_dump(sprintf('La moyenne est de %s', $avg['average']));
+    }
+
+
+    var_dump($pdo);
+} catch (PDOException $e) {
+    var_dump($e);
+    var_dump("Same player, try again");
+} finally {
+    $pdo = null;
+}
